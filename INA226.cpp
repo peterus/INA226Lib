@@ -285,28 +285,10 @@ int16_t INA226::readRegister16(uint8_t reg)
 {
     int16_t value;
 
-    Wire.beginTransmission(inaAddress);
-    #if ARDUINO >= 100
-        Wire.write(reg);
-    #else
-        Wire.send(reg);
-    #endif
-    Wire.endTransmission();
-
-    delay(1);
-
-    Wire.beginTransmission(inaAddress);
+    Wire.write(reg);
     Wire.requestFrom(inaAddress, 2);
-    while(!Wire.available()) {};
-    #if ARDUINO >= 100
-        uint8_t vha = Wire.read();
-        uint8_t vla = Wire.read();
-    #else
-        uint8_t vha = Wire.receive();
-        uint8_t vla = Wire.receive();
-    #endif
-    Wire.endTransmission();
-
+    uint8_t vha = Wire.read();
+    uint8_t vla = Wire.read();
     value = vha << 8 | vla;
 
     return value;
@@ -318,15 +300,7 @@ void INA226::writeRegister16(uint8_t reg, uint16_t val)
     vla = (uint8_t)val;
     val >>= 8;
 
-    Wire.beginTransmission(inaAddress);
-    #if ARDUINO >= 100
-        Wire.write(reg);
-        Wire.write((uint8_t)val);
-        Wire.write(vla);
-    #else
-        Wire.send(reg);
-        Wire.send((uint8_t)val);
-        Wire.send(vla);
-    #endif
-    Wire.endTransmission();
+    Wire.write(reg);
+    Wire.write((uint8_t)val);
+    Wire.write(vla);
 }
