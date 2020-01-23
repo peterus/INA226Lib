@@ -1,4 +1,4 @@
-# Arduino-INA226
+# INA226Lib
 
 INA226 Bi-directional Current/Power Monitor Arduino Library
 
