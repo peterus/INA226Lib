@@ -1,8 +1,7 @@
 /*
 INA226.h - Header file for the Bi-directional Current/Power Monitor Arduino Library.
 
-Version: 1.0.0
-(c) 2014 Korneliusz Jarzebski
+(c) 2014 Korneliusz Jarzebski, modified 2020 by Peter Buchegger
 www.jarzebski.pl
 
 This program is free software: you can redistribute it and/or modify
@@ -104,7 +103,7 @@ class INA226
 
 	bool begin(uint8_t address = INA226_ADDRESS);
 	bool configure(ina226_averages_t avg = INA226_AVERAGES_1, ina226_busConvTime_t busConvTime = INA226_BUS_CONV_TIME_1100US, ina226_shuntConvTime_t shuntConvTime = INA226_SHUNT_CONV_TIME_1100US, ina226_mode_t mode = INA226_MODE_SHUNT_BUS_CONT);
-	bool calibrate(float rShuntValue = 0.1, float iMaxExcepted = 2);
+	bool calibrate(float rShuntValue = 0.1, float iMaxCurrentExcepted = 2);
 
 	ina226_averages_t getAverages(void);
 	ina226_busConvTime_t getBusConversionTime(void);
@@ -138,7 +137,7 @@ class INA226
 	float getMaxShuntVoltage(void);
 	float getMaxPower(void);
 
-    private:
+private:
 
 	int8_t inaAddress;
 	float currentLSB, powerLSB;

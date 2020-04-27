@@ -1,8 +1,7 @@
 /*
 INA226.cpp - Class file for the INA226 Bi-directional Current/Power Monitor Arduino Library.
 
-Version: 1.0.0
-(c) 2014 Korneliusz Jarzebski
+(c) 2014 Korneliusz Jarzebski, modified 2020 by Peter Buchegger
 www.jarzebski.pl
 
 This program is free software: you can redistribute it and/or modify
@@ -49,7 +48,7 @@ bool INA226::configure(ina226_averages_t avg, ina226_busConvTime_t busConvTime, 
     return true;
 }
 
-bool INA226::calibrate(float rShuntValue, float iMaxExpected)
+bool INA226::calibrate(float rShuntValue, float iMaxCurrentExcepted)
 {
     uint16_t calibrationValue;
     rShunt = rShuntValue;
@@ -58,7 +57,7 @@ bool INA226::calibrate(float rShuntValue, float iMaxExpected)
 
     iMaxPossible = vShuntMax / rShunt;
 
-    minimumLSB = iMaxExpected / 32767;
+    minimumLSB = iMaxCurrentExcepted / 32767;
 
     currentLSB = (uint32_t)(minimumLSB * 100000000);
     currentLSB /= 100000000;
@@ -285,7 +284,10 @@ int16_t INA226::readRegister16(uint8_t reg)
 {
     int16_t value;
 
+    Wire.beginTransmission(inaAddress);
     Wire.write(reg);
+    Wire.endTransmission();
+
     Wire.requestFrom(inaAddress, 2);
     uint8_t vha = Wire.read();
     uint8_t vla = Wire.read();
@@ -300,7 +302,9 @@ void INA226::writeRegister16(uint8_t reg, uint16_t val)
     vla = (uint8_t)val;
     val >>= 8;
 
+    Wire.beginTransmission(inaAddress);
     Wire.write(reg);
     Wire.write((uint8_t)val);
     Wire.write(vla);
+    Wire.endTransmission();
 }
