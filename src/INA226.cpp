@@ -27,11 +27,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "INA226.h"
 
+INA226::INA226(TwoWire &w){
+  wire = &w;
+}
+
 bool INA226::begin(uint8_t address)
 {
-    Wire.begin();
     inaAddress = address;
-    return true;
+    return configure(
+        INA226_AVERAGES_1,
+        INA226_BUS_CONV_TIME_1100US,
+        INA226_SHUNT_CONV_TIME_1100US,
+        INA226_MODE_SHUNT_BUS_CONT
+    );
 }
 
 bool INA226::configure(ina226_averages_t avg, ina226_busConvTime_t busConvTime, ina226_shuntConvTime_t shuntConvTime, ina226_mode_t mode)
@@ -43,9 +51,7 @@ bool INA226::configure(ina226_averages_t avg, ina226_busConvTime_t busConvTime, 
     vBusMax = 36;
     vShuntMax = 0.08192f;
 
-    writeRegister16(INA226_REG_CONFIG, config);
-
-    return true;
+    return writeRegister16(INA226_REG_CONFIG, config);
 }
 
 bool INA226::calibrate(float rShuntValue, float iMaxCurrentExcepted)
@@ -69,9 +75,7 @@ bool INA226::calibrate(float rShuntValue, float iMaxCurrentExcepted)
 
     calibrationValue = (uint16_t)((0.00512) / (currentLSB * rShunt));
 
-    writeRegister16(INA226_REG_CALIBRATION, calibrationValue);
-
-    return true;
+    return writeRegister16(INA226_REG_CALIBRATION, calibrationValue);
 }
 
 float INA226::getMaxPossibleCurrent(void)
@@ -182,9 +186,9 @@ ina226_mode_t INA226::getMode(void)
     return (ina226_mode_t)value;
 }
 
-void INA226::setMaskEnable(uint16_t mask)
+bool INA226::setMaskEnable(uint16_t mask)
 {
-    writeRegister16(INA226_REG_MASKENABLE, mask);
+    return writeRegister16(INA226_REG_MASKENABLE, mask);
 }
 
 uint16_t INA226::getMaskEnable(void)
@@ -192,55 +196,55 @@ uint16_t INA226::getMaskEnable(void)
     return readRegister16(INA226_REG_MASKENABLE);
 }
 
-void INA226::enableShuntOverLimitAlert(void)
+bool INA226::enableShuntOverLimitAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SOL);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SOL);
 }
 
-void INA226::enableShuntUnderLimitAlert(void)
+bool INA226::enableShuntUnderLimitAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SUL);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SUL);
 }
 
-void INA226::enableBusOvertLimitAlert(void)
+bool INA226::enableBusOvertLimitAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BOL);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BOL);
 }
 
-void INA226::enableBusUnderLimitAlert(void)
+bool INA226::enableBusUnderLimitAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BUL);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BUL);
 }
 
-void INA226::enableOverPowerLimitAlert(void)
+bool INA226::enableOverPowerLimitAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_POL);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_POL);
 }
 
-void INA226::enableConversionReadyAlert(void)
+bool INA226::enableConversionReadyAlert(void)
 {
-    writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_CNVR);
+    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_CNVR);
 }
 
-void INA226::setBusVoltageLimit(float voltage)
+bool INA226::setBusVoltageLimit(float voltage)
 {
     uint16_t value = voltage / 0.00125;
-    writeRegister16(INA226_REG_ALERTLIMIT, value);
+    return writeRegister16(INA226_REG_ALERTLIMIT, value);
 }
 
-void INA226::setShuntVoltageLimit(float voltage)
+bool INA226::setShuntVoltageLimit(float voltage)
 {
     uint16_t value = voltage / 0.0000025;
-    writeRegister16(INA226_REG_ALERTLIMIT, value);
+    return writeRegister16(INA226_REG_ALERTLIMIT, value);
 }
 
-void INA226::setPowerLimit(float watts)
+bool INA226::setPowerLimit(float watts)
 {
     uint16_t value = watts / powerLSB;
-    writeRegister16(INA226_REG_ALERTLIMIT, value);
+    return writeRegister16(INA226_REG_ALERTLIMIT, value);
 }
 
-void INA226::setAlertInvertedPolarity(bool inverted)
+bool INA226::setAlertInvertedPolarity(bool inverted)
 {
     uint16_t temp = getMaskEnable();
 
@@ -252,10 +256,10 @@ void INA226::setAlertInvertedPolarity(bool inverted)
         temp &= ~INA226_BIT_APOL;
     }
 
-    setMaskEnable(temp);
+    return setMaskEnable(temp);
 }
 
-void INA226::setAlertLatch(bool latch)
+bool INA226::setAlertLatch(bool latch)
 {
     uint16_t temp = getMaskEnable();
 
@@ -267,7 +271,7 @@ void INA226::setAlertLatch(bool latch)
         temp &= ~INA226_BIT_LEN;
     }
 
-    setMaskEnable(temp);
+    return setMaskEnable(temp);
 }
 
 bool INA226::isMathOverflow(void)
@@ -284,27 +288,27 @@ int16_t INA226::readRegister16(uint8_t reg)
 {
     int16_t value;
 
-    Wire.beginTransmission(inaAddress);
-    Wire.write(reg);
-    Wire.endTransmission();
+    wire->beginTransmission(inaAddress);
+    wire->write(reg);
+    wire->endTransmission();
 
-    Wire.requestFrom(inaAddress, 2);
-    uint8_t vha = Wire.read();
-    uint8_t vla = Wire.read();
+    wire->requestFrom(inaAddress, 2);
+    uint8_t vha = wire->read();
+    uint8_t vla = wire->read();
     value = vha << 8 | vla;
 
     return value;
 }
 
-void INA226::writeRegister16(uint8_t reg, uint16_t val)
+bool INA226::writeRegister16(uint8_t reg, uint16_t val)
 {
     uint8_t vla;
     vla = (uint8_t)val;
     val >>= 8;
 
-    Wire.beginTransmission(inaAddress);
-    Wire.write(reg);
-    Wire.write((uint8_t)val);
-    Wire.write(vla);
-    Wire.endTransmission();
+    wire->beginTransmission(inaAddress);
+    wire->write(reg);
+    wire->write((uint8_t)val);
+    wire->write(vla);
+    return wire->endTransmission() == 0;
 }

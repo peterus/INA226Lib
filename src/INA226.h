@@ -100,6 +100,7 @@ typedef enum
 class INA226
 {
     public:
+	INA226(TwoWire &w);
 
 	bool begin(uint8_t address = INA226_ADDRESS);
 	bool configure(ina226_averages_t avg = INA226_AVERAGES_1, ina226_busConvTime_t busConvTime = INA226_BUS_CONV_TIME_1100US, ina226_shuntConvTime_t shuntConvTime = INA226_SHUNT_CONV_TIME_1100US, ina226_mode_t mode = INA226_MODE_SHUNT_BUS_CONT);
@@ -110,19 +111,19 @@ class INA226
 	ina226_shuntConvTime_t getShuntConversionTime(void);
 	ina226_mode_t getMode(void);
 
-	void enableShuntOverLimitAlert(void);
-	void enableShuntUnderLimitAlert(void);
-	void enableBusOvertLimitAlert(void);
-	void enableBusUnderLimitAlert(void);
-	void enableOverPowerLimitAlert(void);
-	void enableConversionReadyAlert(void);
+	bool enableShuntOverLimitAlert(void);
+	bool enableShuntUnderLimitAlert(void);
+	bool enableBusOvertLimitAlert(void);
+	bool enableBusUnderLimitAlert(void);
+	bool enableOverPowerLimitAlert(void);
+	bool enableConversionReadyAlert(void);
 
-	void setBusVoltageLimit(float voltage);
-	void setShuntVoltageLimit(float voltage);
-	void setPowerLimit(float watts);
+	bool setBusVoltageLimit(float voltage);
+	bool setShuntVoltageLimit(float voltage);
+	bool setPowerLimit(float watts);
 
-	void setAlertInvertedPolarity(bool inverted);
-	void setAlertLatch(bool latch);
+	bool setAlertInvertedPolarity(bool inverted);
+	bool setAlertLatch(bool latch);
 
 	bool isMathOverflow(void);
 	bool isAlert(void);
@@ -138,15 +139,16 @@ class INA226
 	float getMaxPower(void);
 
 private:
+    TwoWire *wire;
 
 	int8_t inaAddress;
 	float currentLSB, powerLSB;
 	float vShuntMax, vBusMax, rShunt;
 
-	void setMaskEnable(uint16_t mask);
+	bool setMaskEnable(uint16_t mask);
 	uint16_t getMaskEnable(void);
 
-	void writeRegister16(uint8_t reg, uint16_t val);
+	bool writeRegister16(uint8_t reg, uint16_t val);
 	int16_t readRegister16(uint8_t reg);
 };
 
