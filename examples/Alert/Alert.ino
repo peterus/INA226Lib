@@ -18,6 +18,8 @@ void setup()
   Serial.println("Initialize INA226");
   Serial.println("-----------------------------------------------");
 
+  Wire.begin();
+
   // Default INA226 address is 0x40
   bool success = ina.begin();
 
