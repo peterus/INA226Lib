@@ -9,7 +9,7 @@
 #include <Wire.h>
 #include <INA226.h>
 
-INA226 ina;
+INA226 ina(Wire);
 
 void checkConfig()
 {
@@ -93,8 +93,17 @@ void setup()
   Serial.println("Initialize INA226");
   Serial.println("-----------------------------------------------");
 
+  Wire.begin();
+
   // Default INA226 address is 0x40
-  ina.begin();
+  bool success = ina.begin();
+
+  // Check if the connection was successful, stop if not
+  if(!success)
+  {
+    Serial.println("Connection error");
+    while(1);
+  }
 
   // Configure INA226
   ina.configure(INA226_AVERAGES_1, INA226_BUS_CONV_TIME_1100US, INA226_SHUNT_CONV_TIME_1100US, INA226_MODE_SHUNT_BUS_CONT);
