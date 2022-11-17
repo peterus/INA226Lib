@@ -18,13 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #if ARDUINO >= 100
-#include "Arduino.h"
+#include <Arduino.h>
 #else
-#include "WProgram.h"
+#include <WProgram.h>
 #endif
 
 #include <Wire.h>
-
 #include "INA226.h"
 
 INA226::INA226(TwoWire &w){
@@ -59,9 +58,7 @@ bool INA226::calibrate(float rShuntValue, float iMaxCurrentExcepted)
     uint16_t calibrationValue;
     rShunt = rShuntValue;
 
-    float iMaxPossible, minimumLSB;
-
-    iMaxPossible = vShuntMax / rShunt;
+    float minimumLSB;
 
     minimumLSB = iMaxCurrentExcepted / 32767;
 
@@ -196,34 +193,40 @@ uint16_t INA226::getMaskEnable(void)
     return readRegister16(INA226_REG_MASKENABLE);
 }
 
-bool INA226::enableShuntOverLimitAlert(void)
+bool INA226::addMaskEnableBit(uint16 mask) 
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SOL);
+  uint16_t temp = getMaskEnable();
+  temp |= mask;
+  return setMaskEnable(temp);
+}
+
+bool INA226::enableShuntOverLimitAlert(void) {
+  return addMaskEnableBit(INA226_BIT_SOL);
 }
 
 bool INA226::enableShuntUnderLimitAlert(void)
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_SUL);
+  return addMaskEnableBit(INA226_BIT_SUL);
 }
 
 bool INA226::enableBusOvertLimitAlert(void)
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BOL);
+  return addMaskEnableBit(INA226_BIT_BOL);
 }
 
 bool INA226::enableBusUnderLimitAlert(void)
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_BUL);
+  return addMaskEnableBit(INA226_BIT_BUL);
 }
 
 bool INA226::enableOverPowerLimitAlert(void)
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_POL);
+  return addMaskEnableBit(INA226_BIT_POL);
 }
 
 bool INA226::enableConversionReadyAlert(void)
 {
-    return writeRegister16(INA226_REG_MASKENABLE, INA226_BIT_CNVR);
+    return addMaskEnableBit(INA226_BIT_CNVR);    
 }
 
 bool INA226::setBusVoltageLimit(float voltage)
@@ -284,20 +287,26 @@ bool INA226::isAlert(void)
     return ((getMaskEnable() & INA226_BIT_AFF) == INA226_BIT_AFF);
 }
 
-int16_t INA226::readRegister16(uint8_t reg)
+bool INA226::isConversionReady(void) 
 {
-    int16_t value;
+  return ((getMaskEnable() & INA226_BIT_CVRF) == INA226_BIT_CVRF);
+}
 
-    wire->beginTransmission(inaAddress);
-    wire->write(reg);
-    wire->endTransmission();
 
-    wire->requestFrom(inaAddress, 2);
-    uint8_t vha = wire->read();
-    uint8_t vla = wire->read();
-    value = vha << 8 | vla;
+int16_t INA226::readRegister16(uint8_t reg) 
+{
+  int16_t value;
 
-    return value;
+  wire->beginTransmission(inaAddress);
+  wire->write(reg);
+  wire->endTransmission();
+
+  wire->requestFrom(inaAddress, 2);
+  uint8_t vha = wire->read();
+  uint8_t vla = wire->read();
+  value = vha << 8 | vla;
+
+  return value;
 }
 
 bool INA226::writeRegister16(uint8_t reg, uint16_t val)
