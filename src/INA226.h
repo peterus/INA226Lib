@@ -146,9 +146,9 @@ private:
 	float currentLSB, powerLSB;
 	float vShuntMax, vBusMax, rShunt;
 
-	bool addMaskEnableBit(uint16 mask);
+    bool addMaskEnableBit(uint16 mask);
     bool setMaskEnable(uint16_t mask);
-	uint16_t getMaskEnable(void);
+    uint16_t getMaskEnable(void);
 
 	bool writeRegister16(uint8_t reg, uint16_t val);
 	int16_t readRegister16(uint8_t reg);

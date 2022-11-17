@@ -195,33 +195,33 @@ uint16_t INA226::getMaskEnable(void)
 
 bool INA226::addMaskEnableBit(uint16 mask) 
 {
-  uint16_t temp = getMaskEnable();
-  temp |= mask;
-  return setMaskEnable(temp);
+    uint16_t temp = getMaskEnable();
+    temp |= mask;
+    return setMaskEnable(temp);
 }
 
 bool INA226::enableShuntOverLimitAlert(void) {
-  return addMaskEnableBit(INA226_BIT_SOL);
+    return addMaskEnableBit(INA226_BIT_SOL);
 }
 
 bool INA226::enableShuntUnderLimitAlert(void)
 {
-  return addMaskEnableBit(INA226_BIT_SUL);
+    return addMaskEnableBit(INA226_BIT_SUL);
 }
 
 bool INA226::enableBusOvertLimitAlert(void)
 {
-  return addMaskEnableBit(INA226_BIT_BOL);
+    return addMaskEnableBit(INA226_BIT_BOL);
 }
 
 bool INA226::enableBusUnderLimitAlert(void)
 {
-  return addMaskEnableBit(INA226_BIT_BUL);
+    return addMaskEnableBit(INA226_BIT_BUL);
 }
 
 bool INA226::enableOverPowerLimitAlert(void)
 {
-  return addMaskEnableBit(INA226_BIT_POL);
+    return addMaskEnableBit(INA226_BIT_POL);
 }
 
 bool INA226::enableConversionReadyAlert(void)
@@ -289,24 +289,24 @@ bool INA226::isAlert(void)
 
 bool INA226::isConversionReady(void) 
 {
-  return ((getMaskEnable() & INA226_BIT_CVRF) == INA226_BIT_CVRF);
+    return ((getMaskEnable() & INA226_BIT_CVRF) == INA226_BIT_CVRF);
 }
 
 
 int16_t INA226::readRegister16(uint8_t reg) 
 {
-  int16_t value;
+    int16_t value;
 
-  wire->beginTransmission(inaAddress);
-  wire->write(reg);
-  wire->endTransmission();
+    wire->beginTransmission(inaAddress);
+    wire->write(reg);
+    wire->endTransmission();
 
-  wire->requestFrom(inaAddress, 2);
-  uint8_t vha = wire->read();
-  uint8_t vla = wire->read();
-  value = vha << 8 | vla;
+    wire->requestFrom(inaAddress, 2);
+    uint8_t vha = wire->read();
+    uint8_t vla = wire->read();
+    value = vha << 8 | vla;
 
-  return value;
+    return value;
 }
 
 bool INA226::writeRegister16(uint8_t reg, uint16_t val)
