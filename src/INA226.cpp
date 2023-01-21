@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <Wire.h>
 #include "INA226.h"
 
-INA226::INA226(TwoWire &w){
+INA226::INA226(TwoWire &w) : inaAddress(0), currentLSB(0), powerLSB(0), vShuntMax(0.08192f), vBusMax(36), rShunt(0) {
   wire = &w;
 }
 
