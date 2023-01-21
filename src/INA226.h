@@ -110,9 +110,9 @@ class INA226
 	ina226_busConvTime_t getBusConversionTime(void);
 	ina226_shuntConvTime_t getShuntConversionTime(void);
 	ina226_mode_t getMode(void);
-
+    
 	bool enableShuntOverLimitAlert(void);
-	bool enableShuntUnderLimitAlert(void);
+    bool enableShuntUnderLimitAlert(void);
 	bool enableBusOvertLimitAlert(void);
 	bool enableBusUnderLimitAlert(void);
 	bool enableOverPowerLimitAlert(void);
@@ -127,6 +127,7 @@ class INA226
 
 	bool isMathOverflow(void);
 	bool isAlert(void);
+	bool isConversionReady(void);
 
 	float readShuntCurrent(void);
 	float readShuntVoltage(void);
@@ -145,8 +146,9 @@ private:
 	float currentLSB, powerLSB;
 	float vShuntMax, vBusMax, rShunt;
 
-	bool setMaskEnable(uint16_t mask);
-	uint16_t getMaskEnable(void);
+    bool addMaskEnableBit(uint16 mask);
+    bool setMaskEnable(uint16_t mask);
+    uint16_t getMaskEnable(void);
 
 	bool writeRegister16(uint8_t reg, uint16_t val);
 	int16_t readRegister16(uint8_t reg);
