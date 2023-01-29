@@ -193,7 +193,7 @@ uint16_t INA226::getMaskEnable(void)
     return readRegister16(INA226_REG_MASKENABLE);
 }
 
-bool INA226::addMaskEnableBit(uint16 mask) 
+bool INA226::addMaskEnableBit(uint16_t mask) 
 {
     uint16_t temp = getMaskEnable();
     temp |= mask;
