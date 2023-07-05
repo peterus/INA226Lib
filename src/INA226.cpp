@@ -60,7 +60,7 @@ bool INA226::calibrate(float rShuntValue, float iMaxCurrentExcepted)
 
     float minimumLSB;
 
-    minimumLSB = iMaxCurrentExcepted / 32767;
+    minimumLSB = iMaxCurrentExcepted / 32768;
 
     currentLSB = (uint32_t)(minimumLSB * 100000000);
     currentLSB /= 100000000;
@@ -193,7 +193,7 @@ uint16_t INA226::getMaskEnable(void)
     return readRegister16(INA226_REG_MASKENABLE);
 }
 
-bool INA226::addMaskEnableBit(uint16 mask) 
+bool INA226::addMaskEnableBit(uint16_t mask) 
 {
     uint16_t temp = getMaskEnable();
     temp |= mask;

@@ -149,7 +149,7 @@ private:
 	float vBusMax;
 	float rShunt;
 
-        bool addMaskEnableBit(uint16 mask);
+        bool addMaskEnableBit(uint16_t mask);
         bool setMaskEnable(uint16_t mask);
         uint16_t getMaskEnable(void);
 
